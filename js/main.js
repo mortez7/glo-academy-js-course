@@ -16,10 +16,6 @@ const isNumber = function (num) {
     return 0;
   }
 
-  if (num[0] === " " || num[num.length - 1] === " ") {
-    num = num.trim();
-  }
-
   return !isNaN(parseFloat(num)) && isFinite(num);
 };
 
