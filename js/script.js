@@ -9,7 +9,11 @@ const otherNumberItems = document.querySelectorAll(".other-items.number");
 const rangeInput = document.querySelector(
   ".rollback .main-controls__range input"
 );
-const totalInputs = Array.from(document.getElementsByClassName("total-input"));
+const totalInput1 = document.getElementsByClassName("total-input")[0];
+const totalInput2 = document.getElementsByClassName("total-input")[1];
+const totalInput3 = document.getElementsByClassName("total-input")[2];
+const totalInput4 = document.getElementsByClassName("total-input")[3];
+const totalInput5 = document.getElementsByClassName("total-input")[4];
 const screens = document.querySelectorAll(".screen");
 
 const appData = {
