@@ -31,22 +31,11 @@ const appData = {
   servicePricesNumber: 0,
   fullPrice: 0,
 
-  isNumber: function (num) {
-    if (num === null) {
-      return 0;
-    }
-
-    return !isNaN(parseFloat(num)) && isFinite(num);
-  },
-
-  isString: function (str) {
-    return typeof str === "string" && /[^\d]/.test(str);
-  },
-
   init: function () {
-    appData.addTitle();
+    this.addTitle();
 
     startBtn.addEventListener("click", appData.start);
+    resetBtn.addEventListener("click", appData.reset);
     plusBtn.addEventListener("click", appData.addScreenBlock);
     rangeInput.addEventListener("input", appData.addRollback);
   },
@@ -99,32 +88,30 @@ const appData = {
   },
 
   addPrices: function () {
-    appData.screenPrice = appData.screens.reduce(
+    this.screenPrice = this.screens.reduce(
       (sum, screen) => (sum += +screen.price),
       0
     );
 
-    appData.screensTotalCount = appData.screens.reduce(
+    this.screensTotalCount = this.screens.reduce(
       (sum, screen) => (sum += +screen.count),
       0
     );
 
-    for (let key in appData.servicesNumber) {
-      appData.servicePricesNumber += appData.servicesNumber[key];
+    for (let key in this.servicesNumber) {
+      this.servicePricesNumber += this.servicesNumber[key];
     }
 
-    for (let key in appData.servicesPercent) {
-      appData.servicePricesPercent +=
-        appData.screenPrice * (appData.servicesPercent[key] / 100);
+    for (let key in this.servicesPercent) {
+      this.servicePricesPercent +=
+        this.screenPrice * (this.servicesPercent[key] / 100);
     }
 
-    appData.fullPrice =
-      +appData.screenPrice +
-      appData.servicePricesPercent +
-      appData.servicePricesNumber;
+    this.fullPrice =
+      +this.screenPrice + this.servicePricesPercent + this.servicePricesNumber;
 
-    appData.servicePercentPrice = Math.ceil(
-      appData.fullPrice - appData.fullPrice * (appData.rollback / 100)
+    this.servicePercentPrice = Math.ceil(
+      this.fullPrice - this.fullPrice * (this.rollback / 100)
     );
   },
 
@@ -141,12 +128,12 @@ const appData = {
   },
 
   showResult: function () {
-    total.value = appData.screenPrice;
-    totalCount.value = appData.screensTotalCount;
+    total.value = this.screenPrice;
+    totalCount.value = this.screensTotalCount;
     totalCountOther.value =
-      appData.servicePricesPercent + appData.servicePricesNumber;
-    fullTotalCount.value = appData.fullPrice;
-    totalCountRollback.value = appData.servicePercentPrice;
+      this.servicePricesPercent + this.servicePricesNumber;
+    fullTotalCount.value = this.fullPrice;
+    totalCountRollback.value = this.servicePercentPrice;
   },
 
   checkScreenValues: function () {
@@ -165,15 +152,99 @@ const appData = {
     return allValid;
   },
 
+  disableItems: function () {
+    screens = document.querySelectorAll(".screen");
+
+    screens.forEach((screen) => {
+      const input = screen.querySelector("input");
+      const select = screen.querySelector("select");
+
+      input.disabled = true;
+      select.disabled = true;
+    });
+
+    startBtn.style.display = "none";
+    resetBtn.style.display = "block";
+  },
+
+  clearData: function () {
+    appData.screenPrice = 0;
+    appData.screensTotalCount = 0;
+    appData.rollback = 0;
+    appData.servicesPercent = [];
+    appData.servicesNumber = [];
+    appData.servicePercentPrice = 0;
+    appData.servicePricesPercent = 0;
+    appData.servicePricesNumber = 0;
+    appData.fullPrice = 0;
+  },
+
+  clearScreens: function () {
+    let screens = document.querySelectorAll(".screen");
+
+    for (let i = 0; i < screens.length; i++) {
+      if (i < screens.length - 1) {
+        screens[i].remove();
+      } else {
+        const input = screens[i].querySelector("input");
+        const select = screens[i].querySelector("select");
+
+        input.disabled = false;
+        input.value = "";
+
+        select.disabled = false;
+        select.selectedIndex = 0;
+      }
+    }
+
+    appData.screens = [];
+    //appData.addScreens();
+  },
+
+  clearServices: function () {
+    otherPercentItems.forEach((item) => {
+      item.querySelector("input[type=checkbox]").checked = false;
+    });
+
+    otherNumberItems.forEach((item) => {
+      item.querySelector("input[type=checkbox]").checked = false;
+    });
+  },
+
+  clearRollback: function () {
+    rangeValue.textContent = "0%";
+    rangeInput.value = 0;
+  },
+
+  clearResults: function () {
+    total.value = 0;
+    totalCount.value = 0;
+    totalCountOther.value = 0;
+    fullTotalCount.value = 0;
+    totalCountRollback.value = 0;
+  },
+
   start: function () {
     if (appData.checkScreenValues()) {
       appData.addScreens();
       appData.addServices();
       appData.addPrices();
       appData.showResult();
+      appData.disableItems();
     }
 
     // appData.logger();
+  },
+
+  reset: function () {
+    resetBtn.style.display = "none";
+    startBtn.style.display = "block";
+    appData.clearData();
+    appData.clearScreens();
+    appData.clearServices();
+    appData.clearRollback();
+    appData.clearResults();
+    console.log(appData);
   },
 
   logger: function () {
@@ -186,6 +257,18 @@ const appData = {
         " рублей"
     );
   },
+};
+
+const isNumber = (num) => {
+  if (num === null) {
+    return 0;
+  }
+
+  return !isNaN(parseFloat(num)) && isFinite(num);
+};
+
+const isString = (str) => {
+  return typeof str === "string" && /[^\d]/.test(str);
 };
 
 appData.init();
