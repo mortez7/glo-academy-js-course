@@ -131,7 +131,7 @@ const appData = {
   addRollback: function () {
     rangeValue.textContent = `${rangeInput.value}%`;
     appData.rollback = rangeInput.value;
-    if (totalCountRollback.value > 0) {
+    if (fullTotalCount.value > 0) {
       appData.servicePercentPrice = Math.ceil(
         appData.fullPrice - appData.fullPrice * (appData.rollback / 100)
       );
